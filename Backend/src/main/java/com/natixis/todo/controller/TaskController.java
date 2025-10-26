@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +40,8 @@ public class TaskController {
             }
     )
     @GetMapping
-    public ResponseEntity<List<TaskDto>> getAllTasks(){
-        return ResponseEntity.ok(taskService.getAllTasks());
+    public ResponseEntity<List<TaskDto>> getAllTasks(Pageable pageable) {
+        return ResponseEntity.ok(taskService.getAll(pageable));
     }
 
     @Operation(
@@ -60,7 +61,7 @@ public class TaskController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<TaskDto> getTaskById(@PathVariable Integer id){
-        return ResponseEntity.ok(taskService.getTaskById(id));
+        return ResponseEntity.ok(taskService.getById(id));
     }
 
     @Operation(
@@ -73,7 +74,7 @@ public class TaskController {
     )
     @PostMapping
     public ResponseEntity<TaskDto> createTask(@RequestBody TaskDto taskDto){
-        return ResponseEntity.ok(taskService.addTask(taskDto));
+        return ResponseEntity.ok(taskService.add(taskDto));
     }
 
     @Operation(
@@ -83,9 +84,9 @@ public class TaskController {
                     @ApiResponse(responseCode = "200", description = "Liste filtrée récupérée avec succès")
             }
     )
-    @GetMapping("/status/{completed}")
-    public ResponseEntity<List<TaskDto>> getTasksByStatus(@PathVariable Boolean completed) {
-        return ResponseEntity.ok(taskService.getTasksByStatus(completed));
+    @GetMapping("/status")
+    public ResponseEntity<List<TaskDto>> getTasksByStatus(@RequestParam Boolean completed) {
+        return ResponseEntity.ok(taskService.getByStatus(completed));
     }
 
     @Operation(
@@ -100,7 +101,7 @@ public class TaskController {
     public ResponseEntity<TaskDto> updateTask(
             @PathVariable Integer id,
             @RequestBody TaskDto taskDto) {
-        return ResponseEntity.ok(taskService.updateTask(id, taskDto));
+        return ResponseEntity.ok(taskService.update(id, taskDto));
     }
 
     @Operation(
@@ -113,7 +114,7 @@ public class TaskController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
-        taskService.deleteTask(id);
+        taskService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
