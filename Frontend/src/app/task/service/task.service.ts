@@ -1,121 +1,140 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Task, TaskStats, TaskStatus } from '../model/task.model';
+import { Injectable, signal } from '@angular/core';
+import { Task } from '../model/task.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private tasks$ = new BehaviorSubject<Task[]>([
-    {
-      id: 1,
-      label: 'Développer l\'interface utilisateur',
-      description: 'Créer les composants Angular pour la liste et les détails des tâches avec Material Design. Assurer la responsivité et l\'accessibilité de l\'interface.',
-      completed: false
-    },
-    {
-      id: 2,
-      label: 'Configurer le routing',
-      description: 'Mettre en place les routes pour naviguer entre les différentes vues de l\'application. Configurer les guards et les resolvers nécessaires.',
-      completed: true
-    },
-    {
-      id: 3,
-      label: 'Implémenter le service de tâches',
-      description: 'Créer un service pour gérer les opérations CRUD sur les tâches. Intégrer avec l\'API backend et gérer les états de chargement.',
-      completed: false
-    },
-    {
-      id: 4,
-      label: 'Ajouter les tests unitaires',
-      description: 'Écrire les tests pour valider le bon fonctionnement de l\'application. Couvrir les composants, services et pipes.',
-      completed: false
-    }
-  ]);
+  // Signal pour stocker les tâches
+  private _tasks = signal<Task[]>([]);
 
-  constructor() { }
+  // Signal readonly exposé publiquement
+  public readonly tasks = this._tasks.asReadonly();
 
-  // Récupérer toutes les tâches
-  getTasks(): Observable<Task[]> {
-    return this.tasks$.asObservable();
+  constructor() {
+    this.initializeDemoData();
   }
 
-  // Récupérer une tâche par son ID
-  getTaskById(id: number): Observable<Task | undefined> {
-    return this.tasks$.pipe(
-      map(tasks => tasks.find(task => task.id === id))
+  /**
+   * Initialise des données de démonstration
+   */
+  private initializeDemoData(): void {
+    const demoTasks: Task[] = [
+      {
+        id: 'task-1',
+        label: 'Préparer la réunion mensuelle',
+        description: 'Organiser l\'ordre du jour et préparer les documents nécessaires pour la réunion mensuelle avec l\'équipe.',
+        completed: false
+      },
+      {
+        id: 'task-2',
+        label: 'Réviser le code du module utilisateur',
+        description: 'Effectuer une revue de code approfondie du module de gestion des utilisateurs avant la mise en production.',
+        completed: true
+      },
+      {
+        id: 'task-3',
+        label: 'Mettre à jour la documentation',
+        description: 'Mettre à jour la documentation technique du projet suite aux dernières modifications de l\'API.',
+        completed: false
+      },
+      {
+        id: 'task-4',
+        label: 'Corriger les bugs critiques',
+        description: 'Résoudre les bugs critiques signalés dans le système de tickets avant la fin de la semaine.',
+        completed: false
+      },
+      {
+        id: 'task-5',
+        label: 'Former les nouveaux développeurs',
+        description: 'Organiser une session de formation pour les nouveaux membres de l\'équipe sur les bonnes pratiques du projet.',
+        completed: true
+      }
+    ];
+
+    this._tasks.set(demoTasks);
+  }
+
+  /**
+   * Récupère toutes les tâches
+   */
+  getAllTasks(): Task[] {
+    return this._tasks();
+  }
+
+  /**
+   * Récupère une tâche par son ID
+   */
+  getTaskById(id: string): Task | undefined {
+    return this._tasks().find(task => task.id === id);
+  }
+
+  /**
+   * Ajoute une nouvelle tâche
+   */
+  addTask(task: Task): void {
+    this._tasks.update(tasks => [...tasks, task]);
+  }
+
+  /**
+   * Met à jour une tâche existante
+   */
+  updateTask(updatedTask: Task): void {
+    this._tasks.update(tasks =>
+      tasks.map(task => task.id === updatedTask.id ? updatedTask : task)
     );
   }
 
-  // Filtrer les tâches par statut
-  getTasksByStatus(status: TaskStatus): Observable<Task[]> {
-    return this.tasks$.pipe(
-      map(tasks => {
-        switch (status) {
-          case 'completed':
-            return tasks.filter(task => task.completed);
-          case 'pending':
-            return tasks.filter(task => !task.completed);
-          default:
-            return tasks;
-        }
-      })
+  /**
+   * Supprime une tâche
+   */
+  deleteTask(id: string): void {
+    this._tasks.update(tasks => tasks.filter(task => task.id !== id));
+  }
+
+  /**
+   * Bascule le statut d'une tâche
+   */
+  toggleTaskStatus(id: string): void {
+    this._tasks.update(tasks =>
+      tasks.map(task =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
     );
   }
 
-  // Obtenir les statistiques
-  getStats(): Observable<TaskStats> {
-    return this.tasks$.pipe(
-      map(tasks => ({
-        total: tasks.length,
-        completed: tasks.filter(t => t.completed).length,
-        pending: tasks.filter(t => !t.completed).length
-      }))
-    );
+  /**
+   * Récupère les tâches actives
+   */
+  getActiveTasks(): Task[] {
+    return this._tasks().filter(task => !task.completed);
   }
 
-  // Ajouter une tâche
-  addTask(task: Omit<Task, 'id'>): void {
-    const tasks = this.tasks$.value;
-    const newTask: Task = {
-      ...task,
-      id: Math.max(...tasks.map(t => t.id), 0) + 1
-    };
-    this.tasks$.next([...tasks, newTask]);
+  /**
+   * Récupère les tâches complétées
+   */
+  getCompletedTasks(): Task[] {
+    return this._tasks().filter(task => task.completed);
   }
 
-  // Mettre à jour une tâche
-  updateTask(id: number, updates: Partial<Task>): void {
-    const tasks = this.tasks$.value;
-    const index = tasks.findIndex(task => task.id === id);
-    
-    if (index !== -1) {
-      const updatedTasks = [...tasks];
-      updatedTasks[index] = { ...updatedTasks[index], ...updates };
-      this.tasks$.next(updatedTasks);
-    }
+  /**
+   * Compte le nombre total de tâches
+   */
+  getTotalCount(): number {
+    return this._tasks().length;
   }
 
-  // Basculer le statut d'une tâche
-  toggleTaskStatus(id: number): void {
-    const tasks = this.tasks$.value;
-    const task = tasks.find(t => t.id === id);
-    
-    if (task) {
-      this.updateTask(id, { completed: !task.completed });
-    }
+  /**
+   * Compte le nombre de tâches actives
+   */
+  getActiveCount(): number {
+    return this.getActiveTasks().length;
   }
 
-  // Supprimer une tâche
-  deleteTask(id: number): void {
-    const tasks = this.tasks$.value;
-    this.tasks$.next(tasks.filter(task => task.id !== id));
-  }
-
-  // Supprimer toutes les tâches terminées
-  deleteCompletedTasks(): void {
-    const tasks = this.tasks$.value;
-    this.tasks$.next(tasks.filter(task => !task.completed));
+  /**
+   * Compte le nombre de tâches complétées
+   */
+  getCompletedCount(): number {
+    return this.getCompletedTasks().length;
   }
 }

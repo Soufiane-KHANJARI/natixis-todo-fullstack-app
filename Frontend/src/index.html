@@ -1,19 +1,816 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>TodoApp</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!-- Latest compiled and minified CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application de Gestion de Tâches - Démo Interactive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .app-container {
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            padding: 2rem 2rem 1rem;
+            text-align: center;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .app-icon {
+            font-size: 2.5rem;
+            color: #ff4081;
+            background: white;
+            border-radius: 50%;
+            padding: 0.3rem;
+        }
+
+        .app-header h1 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 500;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #5b6bc7;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-tab.active {
+            background: #5b6bc7;
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 0 2rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-header h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-primary {
+            background: #5b6bc7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(91, 107, 199, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #4a5ab8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(91, 107, 199, 0.4);
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: none;
+            padding: 0.6rem 1rem;
+            font-size: 0.95rem;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .filter-btn .badge {
+            background: #e0e0e0;
+            color: #666;
+            border-radius: 12px;
+            padding: 0.15rem 0.5rem;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        .filter-btn.active {
+            color: #5b6bc7;
+            font-weight: 600;
+        }
+
+        .filter-btn.active .badge {
+            background: #5b6bc7;
+            color: white;
+        }
+
+        .filter-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #5b6bc7;
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Task List */
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .task-item {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            border-color: #5b6bc7;
+            box-shadow: 0 4px 12px rgba(91, 107, 199, 0.15);
+            transform: translateX(4px);
+        }
+
+        .task-checkbox {
+            flex-shrink: 0;
+            padding-top: 0.2rem;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #5b6bc7;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .checkbox.checked {
+            background: #5b6bc7;
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: -2px;
+            left: 3px;
+            font-size: 14px;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-content h3 {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #333;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .task-content h3.completed {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-content p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .task-arrow {
+            flex-shrink: 0;
+            color: #ccc;
+        }
+
+        /* Detail Page */
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn-back {
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .btn-back:hover {
+            color: #5b6bc7;
+        }
+
+        .btn-edit {
+            background: #5b6bc7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-badge.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .task-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 2rem 0;
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-section h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            letter-spacing: 0.5px;
+            margin: 0 0 1rem 0;
+            text-transform: uppercase;
+        }
+
+        .description-box {
+            border-left: 4px solid #5b6bc7;
+            background: #f8f9ff;
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .description-box p {
+            color: #555;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .info-table {
+            width: 100%;
+        }
+
+        .info-table td {
+            padding: 0.5rem 0;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: #999;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .detail-actions button {
+            flex: 1;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-complete {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(102, 126, 234, 0.3);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #5b6bc7;
+            box-shadow: 0 0 0 3px rgba(91, 107, 199, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #666;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 1.5rem 1rem 0.5rem;
+            }
+
+            .app-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .nav-tabs {
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .nav-tab {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .main-content {
+                padding: 0 1rem 1rem;
+            }
+
+            .content-card {
+                padding: 1.5rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .detail-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-  <app-root></app-root>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-title">
+                <span class="material-icons app-icon">check_circle</span>
+                <h1>Application de Gestion de Tâches</h1>
+            </div>
+            <p class="header-subtitle">Démo interactive des interfaces Angular</p>
+        </header>
 
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showView('list')">
+                <span class="material-icons">list_alt</span>
+                Liste des tâches
+            </button>
+            <button class="nav-tab" onclick="showView('detail')">
+                <span class="material-icons">search</span>
+                Détails d'une tâche
+            </button>
+            <button class="nav-tab" onclick="showModal()">
+                <span class="material-icons">add</span>
+                Formulaire (Ajout/Modification)
+            </button>
+        </div>
+
+        <!-- Main Content - List View -->
+        <main class="main-content" id="listView">
+            <div class="content-card">
+                <div class="page-header">
+                    <h2>Mes Tâches</h2>
+                    <button class="btn-primary" onclick="showModal()">
+                        <span class="material-icons">add</span>
+                        Nouvelle tâche
+                    </button>
+                </div>
+
+                <div class="filters">
+                    <button class="filter-btn active">
+                        Toutes <span class="badge">4</span>
+                    </button>
+                    <button class="filter-btn">
+                        En cours <span class="badge">2</span>
+                    </button>
+                    <button class="filter-btn">
+                        Terminées <span class="badge">2</span>
+                    </button>
+                </div>
+
+                <div class="tasks-list">
+                    <div class="task-item" onclick="showView('detail')">
+                        <div class="task-checkbox">
+                            <div class="checkbox"></div>
+                        </div>
+                        <div class="task-content">
+                            <h3>Préparer la présentation client</h3>
+                            <p>Créer une présentation PowerPoint pour le client ABC avec les résultats du Q4</p>
+                        </div>
+                        <div class="task-arrow">
+                            <span class="material-icons">arrow_forward</span>
+                        </div>
+                    </div>
+
+                    <div class="task-item">
+                        <div class="task-checkbox">
+                            <div class="checkbox"></div>
+                        </div>
+                        <div class="task-content">
+                            <h3>Réviser le code de la feature X</h3>
+                            <p>Faire une revue de code et vérifier les tests unitaires</p>
+                        </div>
+                        <div class="task-arrow">
+                            <span class="material-icons">arrow_forward</span>
+                        </div>
+                    </div>
+
+                    <div class="task-item">
+                        <div class="task-checkbox">
+                            <div class="checkbox checked"></div>
+                        </div>
+                        <div class="task-content">
+                            <h3 class="completed">Mettre à jour la documentation</h3>
+                            <p>Actualiser la documentation technique du projet</p>
+                        </div>
+                        <div class="task-arrow">
+                            <span class="material-icons">arrow_forward</span>
+                        </div>
+                    </div>
+
+                    <div class="task-item">
+                        <div class="task-checkbox">
+                            <div class="checkbox checked"></div>
+                        </div>
+                        <div class="task-content">
+                            <h3 class="completed">Réunion d'équipe hebdomadaire</h3>
+                            <p>Point hebdomadaire avec l'équipe de développement</p>
+                        </div>
+                        <div class="task-arrow">
+                            <span class="material-icons">arrow_forward</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Detail View -->
+        <main class="main-content hidden" id="detailView">
+            <div class="content-card">
+                <div class="detail-header">
+                    <button class="btn-back" onclick="showView('list')">
+                        <span class="material-icons">arrow_back</span>
+                        Retour
+                    </button>
+                    <button class="btn-edit" onclick="showModal()">
+                        <span class="material-icons">edit</span>
+                        Modifier
+                    </button>
+                </div>
+
+                <div class="detail-content">
+                    <div class="status-badge">
+                        <span class="material-icons">radio_button_unchecked</span>
+                        En cours
+                    </div>
+
+                    <h2 class="task-title">Préparer la présentation client</h2>
+
+                    <div class="detail-section">
+                        <h3>DESCRIPTION</h3>
+                        <div class="description-box">
+                            <p>Créer une présentation PowerPoint pour le client ABC avec les résultats du Q4. Inclure les graphiques de performance, les statistiques de vente et les projections pour le prochain trimestre.</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>INFORMATIONS</h3>
+                        <table class="info-table">
+                            <tr>
+                                <td class="info-label">ID DE LA TÂCHE</td>
+                                <td class="info-label">STATUT</td>
+                            </tr>
+                            <tr>
+                                <td class="info-value">1</td>
+                                <td class="info-value">En cours</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="detail-actions">
+                        <button class="btn-complete">
+                            <span class="material-icons">check</span>
+                            Marquer comme terminée
+                        </button>
+                        <button class="btn-delete">
+                            <span class="material-icons">delete</span>
+                            Supprimer la tâche
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Nouvelle tâche</h2>
+                <button class="btn-close" onclick="hideModal()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>Intitulé de la tâche <span class="required">*</span></label>
+                        <input type="text" class="form-control" placeholder="Ex: Implémenter la nouvelle fonctionnalité" value="Implémenter la nouvelle fonctionnalité">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" placeholder="Développer et tester la nouvelle fonctionnalité...">Développer et tester la nouvelle fonctionnalité de recherche avancée avec filtres multiples et sauvegarde des préférences utilisateur.</textarea>
+                        <div class="char-count">145 / 500 caractères</div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="hideModal()">Annuler</button>
+                <button class="btn-primary" onclick="hideModal()">Créer la tâche</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showView(view) {
+            document.getElementById('listView').classList.add('hidden');
+            document.getElementById('detailView').classList.add('hidden');
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            
+            if (view === 'list') {
+                document.getElementById('listView').classList.remove('hidden');
+                document.querySelectorAll('.nav-tab')[0].classList.add('active');
+            } else if (view === 'detail') {
+                document.getElementById('detailView').classList.remove('hidden');
+                document.querySelectorAll('.nav-tab')[1].classList.add('active');
+            }
+        }
+
+        function showModal() {
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function hideModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        // Close modal on overlay click
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideModal();
+            }
+        });
+    </script>
 </body>
 </html>

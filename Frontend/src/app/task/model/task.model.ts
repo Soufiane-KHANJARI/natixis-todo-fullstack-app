@@ -1,14 +1,26 @@
+/**
+ * Interface représentant une tâche
+ */
 export interface Task {
-  id: number;
+  /** Identifiant unique de la tâche */
+  id: string;
+  
+  /** Intitulé de la tâche */
   label: string;
+  
+  /** Description détaillée de la tâche */
   description: string;
+  
+  /** Indique si la tâche est complétée */
   completed: boolean;
 }
 
-export type TaskStatus = 'all' | 'completed' | 'pending';
+/**
+ * Type pour la création d'une nouvelle tâche (sans ID)
+ */
+export type CreateTaskDto = Omit<Task, 'id'>;
 
-export interface TaskStats {
-  total: number;
-  completed: number;
-  pending: number;
-}
+/**
+ * Type pour la mise à jour partielle d'une tâche
+ */
+export type UpdateTaskDto = Partial<Task> & { id: string };

@@ -1,103 +1,108 @@
-<div class="task-detail-container" *ngIf="task">
-  <!-- En-tête -->
-  <div class="detail-header">
-    <button class="btn-back" (click)="goBack()">
-      <span class="back-icon">←</span>
-      Retour
+<!-- Détail d'une Tâche - Basée sur la maquette -->
+<div class="app-container">
+  <!-- En-tête de l'application -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon class="app-icon">check_circle</mat-icon>
+        <h1>Application de Gestion de Tâches</h1>
+      </div>
+      <p class="header-subtitle">Démo interactive des interfaces Angular</p>
+    </div>
+  </header>
+
+  <!-- Navigation par onglets -->
+  <div class="nav-tabs">
+    <button class="nav-tab" (click)="goToList()">
+      <mat-icon>list_alt</mat-icon>
+      Liste des tâches
     </button>
-    <button class="btn-edit" (click)="editTask()">
-      <span class="edit-icon">✎</span>
-      Modifier
+    <button class="nav-tab active">
+      <mat-icon>search</mat-icon>
+      Détails d'une tâche
+    </button>
+    <button class="nav-tab" (click)="openEditDialog()">
+      <mat-icon>add</mat-icon>
+      Formulaire (Ajout/Modification)
     </button>
   </div>
 
   <!-- Contenu principal -->
-  <div class="detail-content">
-    <!-- Statut avec checkbox -->
-    <div class="status-section">
-      <div class="status-checkbox" (click)="toggleTaskStatus()">
-        <input 
-          type="checkbox" 
-          [checked]="task.completed"
-          id="task-status">
-        <label for="task-status"></label>
-      </div>
-      <div class="status-info">
-        <span class="status-badge" [class.completed]="task.completed">
-          {{ task.completed ? '✓ Terminée' : '○ En cours' }}
-        </span>
-        <span class="status-text">
-          {{ task.completed ? 'Tâche marquée comme terminée' : 'Tâche en cours' }}
-        </span>
-      </div>
-    </div>
-
-    <!-- Titre de la tâche -->
-    <div class="task-title-section">
-      <h1 class="task-title" [class.completed]="task.completed">
-        {{ task.label }}
-      </h1>
-    </div>
-
-    <!-- Description de la tâche -->
-    <div class="task-description-section">
-      <h2 class="section-title">Description</h2>
-      <div class="description-content">
-        <p *ngIf="task.description" class="description-text">
-          {{ task.description }}
-        </p>
-        <p *ngIf="!task.description" class="description-empty">
-          Aucune description disponible pour cette tâche.
-        </p>
-      </div>
-    </div>
-
-    <!-- Informations supplémentaires -->
-    <div class="task-meta-section">
-      <h2 class="section-title">Informations</h2>
-      <div class="meta-grid">
-        <div class="meta-item">
-          <span class="meta-label">ID de la tâche</span>
-          <span class="meta-value">{{ task.id }}</span>
+  <main class="main-content">
+    <div class="content-card">
+      @if (task()) {
+        <!-- Header avec retour et modifier -->
+        <div class="detail-header">
+          <button class="btn-back" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Retour
+          </button>
+          <button class="btn-edit" (click)="openEditDialog()">
+            <mat-icon>edit</mat-icon>
+            Modifier
+          </button>
         </div>
-        <div class="meta-item">
-          <span class="meta-label">Statut</span>
-          <span class="meta-value">
-            {{ task.completed ? 'Terminée' : 'En cours' }}
-          </span>
+
+        <!-- Contenu du détail -->
+        <div class="detail-content">
+          <!-- Badge de statut -->
+          <div class="status-badge" [class.completed]="task()?.completed">
+            <mat-icon>{{ task()?.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            {{ task()?.completed ? 'Terminée' : 'En cours' }}
+          </div>
+
+          <!-- Titre de la tâche -->
+          <h2 class="task-title">{{ task()?.label }}</h2>
+
+          <!-- Section Description -->
+          <div class="detail-section">
+            <h3>DESCRIPTION</h3>
+            <div class="description-box">
+              <p>{{ task()?.description }}</p>
+            </div>
+          </div>
+
+          <!-- Section Informations -->
+          <div class="detail-section">
+            <h3>INFORMATIONS</h3>
+            <table class="info-table">
+              <tbody>
+                <tr>
+                  <td class="info-label">ID DE LA TÂCHE</td>
+                  <td class="info-label">STATUT</td>
+                </tr>
+                <tr>
+                  <td class="info-value">{{ task()?.id }}</td>
+                  <td class="info-value">{{ task()?.completed ? 'Terminée' : 'En cours' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Actions -->
+          <div class="detail-actions">
+            @if (!task()?.completed) {
+              <button class="btn-complete" (click)="toggleTaskStatus()">
+                <mat-icon>check</mat-icon>
+                Marquer comme terminée
+              </button>
+            } @else {
+              <button class="btn-complete" (click)="toggleTaskStatus()">
+                <mat-icon>radio_button_unchecked</mat-icon>
+                Marquer comme en cours
+              </button>
+            }
+            <button class="btn-delete" (click)="deleteTask()">
+              <mat-icon>delete</mat-icon>
+              Supprimer la tâche
+            </button>
+          </div>
         </div>
-      </div>
+      } @else {
+        <div class="loading">
+          <p>Chargement...</p>
+        </div>
+      }
     </div>
-  </div>
-
-  <!-- Actions -->
-  <div class="detail-actions">
-    <button 
-      class="btn-action btn-toggle" 
-      (click)="toggleTaskStatus()"
-      [class.completed]="task.completed">
-      <span class="action-icon">{{ task.completed ? '↺' : '✓' }}</span>
-      {{ task.completed ? 'Marquer comme en cours' : 'Marquer comme terminée' }}
-    </button>
-    <button class="btn-action btn-delete" (click)="deleteTask()">
-      <span class="action-icon">🗑</span>
-      Supprimer la tâche
-    </button>
-  </div>
-</div>
-
-<!-- Message de chargement -->
-<div class="loading-state" *ngIf="!task && loading">
-  <div class="spinner"></div>
-  <p>Chargement de la tâche...</p>
-</div>
-
-<!-- Message d'erreur -->
-<div class="error-state" *ngIf="!task && !loading && error">
-  <div class="error-icon">⚠️</div>
-  <h2>Tâche introuvable</h2>
-  <p>La tâche que vous recherchez n'existe pas ou a été supprimée.</p>
-  <button class="btn-back-home" (click)="goBack()">
-    Retour à la liste
-  </button>
+  </main>
 </div>
