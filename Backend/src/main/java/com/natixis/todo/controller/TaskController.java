@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -102,6 +103,24 @@ public class TaskController {
             @PathVariable Integer id,
             @RequestBody TaskDto taskDto) {
         return ResponseEntity.ok(taskService.update(id, taskDto));
+    }
+
+    @Operation(
+            summary = "Changer le statut d'une tâche",
+            description = "Mettre à jour l'attribut completed d'une tâche spécifique.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Tâche mise à jour avec succès"),
+                    @ApiResponse(responseCode = "404", description = "Tâche non trouvée")
+            }
+    )
+    @PatchMapping("/{id}/completed")
+    public ResponseEntity<TaskDto> updateStatus(
+            @PathVariable Integer id,
+            @RequestBody Map<String, Boolean> listBoolean) {
+
+        boolean completed = listBoolean.get("completed");
+        TaskDto updated = taskService.updateStatus(id, completed);
+        return ResponseEntity.ok(updated);
     }
 
     @Operation(

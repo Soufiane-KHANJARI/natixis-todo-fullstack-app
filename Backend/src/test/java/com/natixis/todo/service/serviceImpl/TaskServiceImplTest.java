@@ -147,6 +147,37 @@ class TaskServiceImplTest {
     }
 
     @Test
+    void testUpdateStatus_success() {
+        // Given
+        when(taskRepository.findById(1)).thenReturn(Optional.of(task1));
+        when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        var result = taskServiceImpl.updateStatus(1, true);
+
+        // Then
+        verify(taskRepository).findById(1);
+        verify(taskRepository).save(any(Task.class));
+        assertNotNull(result);
+        assertEquals(1, result.id());
+        assertTrue(result.completed());
+    }
+
+    @Test
+    void testUpdateStatus_notFound() {
+        // Given
+        when(taskRepository.findById(99)).thenReturn(Optional.empty());
+
+        // When / Then
+        var exception = assertThrows(RuntimeException.class,
+                () -> taskServiceImpl.updateStatus(99, true));
+
+        assertEquals("Tâche non trouvée avec id : 99", exception.getMessage());
+        verify(taskRepository).findById(99);
+        verify(taskRepository, never()).save(any(Task.class));
+    }
+    
+    @Test
     void testDelete_success() {
         // When
         taskServiceImpl.delete(1);

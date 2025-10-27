@@ -61,6 +61,17 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public TaskDto updateStatus(Integer id, Boolean completed) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tâche non trouvée avec id : " + id));
+
+        task.setCompleted(completed);
+        Task updated = taskRepository.save(task);
+
+        return TaskMapper.entityToDto(updated);
+    }
+
+    @Override
     public void delete(Integer id) {
         taskRepository.deleteById(id);
     }

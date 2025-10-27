@@ -11,6 +11,7 @@ public interface TaskService {
     TaskDto add(TaskDto taskDto);
     List<TaskDto> getByStatus(Boolean completed);
     TaskDto update(Integer id, TaskDto taskDto);
+    TaskDto updateStatus(Integer id, Boolean completed);
     void delete(Integer id);
 
 }
