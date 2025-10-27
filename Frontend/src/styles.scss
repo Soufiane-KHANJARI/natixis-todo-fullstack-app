@@ -1,27 +1,24 @@
 /* Styles globaux pour l'application de gestion de tâches */
 
-/* Styles pour les snackbars */
+/* Styles pour les notifications */
+
 .snackbar-success {
-  background-color: #4caf50 !important;
-  color: white !important;
-
-  .mat-mdc-snack-bar-label {
-    color: white !important;
+  .mdc-snackbar__surface {
+    background-color: #4caf50 !important;
   }
-
+  
+  .mat-mdc-snack-bar-label,
   .mat-mdc-button {
     color: white !important;
   }
 }
 
 .snackbar-error {
-  background-color: #f44336 !important;
-  color: white !important;
-
-  .mat-mdc-snack-bar-label {
-    color: white !important;
+  .mdc-snackbar__surface {
+    background-color: #f44336 !important;
   }
-
+  
+  .mat-mdc-snack-bar-label,
   .mat-mdc-button {
     color: white !important;
   }

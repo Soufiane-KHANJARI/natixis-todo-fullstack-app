@@ -5,7 +5,6 @@ import com.natixis.todo.entity.Task;
 import com.natixis.todo.mapper.TaskMapper;
 import com.natixis.todo.repository.TaskRepository;
 import com.natixis.todo.service.TaskService;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,37 +12,39 @@ import java.util.List;
 @Service
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
-    public TaskServiceImpl(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
     }
 
     @Override
-    public List<TaskDto> getAll(Pageable pageable) {
-        return taskRepository.findAll(pageable)
+    public List<TaskDto> getAll() {
+        return taskRepository.findAll()
                 .stream()
-                .map(TaskMapper::entityToDto)
+                .map(taskMapper::entityToDto)
                 .toList();
     }
 
     @Override
     public TaskDto getById(Integer id) {
         return taskRepository.findById(id)
-                .map(TaskMapper::entityToDto)
+                .map(taskMapper::entityToDto)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
     @Override
     public TaskDto add(TaskDto taskDto) {
-        Task task = TaskMapper.dtoToEntity(taskDto);
-        return TaskMapper.entityToDto(taskRepository.save(task));
+        Task task = taskMapper.dtoToEntity(taskDto);
+        return taskMapper.entityToDto(taskRepository.save(task));
     }
 
     @Override
     public List<TaskDto> getByStatus(Boolean completed) {
         return taskRepository.findByCompleted(completed)
                 .stream()
-                .map(TaskMapper::entityToDto)
+                .map(taskMapper::entityToDto)
                 .toList();
     }
 
@@ -57,7 +58,7 @@ public class TaskServiceImpl implements TaskService {
         existingTask.setCompleted(taskDto.completed());
 
         Task updated = taskRepository.save(existingTask);
-        return TaskMapper.entityToDto(updated);
+        return taskMapper.entityToDto(updated);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class TaskServiceImpl implements TaskService {
         task.setCompleted(completed);
         Task updated = taskRepository.save(task);
 
-        return TaskMapper.entityToDto(updated);
+        return taskMapper.entityToDto(updated);
     }
 
     @Override

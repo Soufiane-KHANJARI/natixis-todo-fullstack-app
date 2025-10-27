@@ -41,8 +41,8 @@ public class TaskController {
             }
     )
     @GetMapping
-    public ResponseEntity<List<TaskDto>> getAllTasks(Pageable pageable) {
-        return ResponseEntity.ok(taskService.getAll(pageable));
+    public ResponseEntity<List<TaskDto>> getAllTasks() {
+        return ResponseEntity.ok(taskService.getAll());
     }
 
     @Operation(
@@ -113,12 +113,11 @@ public class TaskController {
                     @ApiResponse(responseCode = "404", description = "Tâche non trouvée")
             }
     )
-    @PatchMapping("/{id}/completed")
+    @PatchMapping("/{id}/{completed}")
     public ResponseEntity<TaskDto> updateStatus(
             @PathVariable Integer id,
-            @RequestBody Map<String, Boolean> listBoolean) {
+            @PathVariable Boolean completed) {
 
-        boolean completed = listBoolean.get("completed");
         TaskDto updated = taskService.updateStatus(id, completed);
         return ResponseEntity.ok(updated);
     }

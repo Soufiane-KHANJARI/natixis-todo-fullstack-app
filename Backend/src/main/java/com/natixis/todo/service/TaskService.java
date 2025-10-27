@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface TaskService {
-    List<TaskDto> getAll(Pageable pageable);
+    List<TaskDto> getAll();
     TaskDto getById(Integer id);
     TaskDto add(TaskDto taskDto);
     List<TaskDto> getByStatus(Boolean completed);

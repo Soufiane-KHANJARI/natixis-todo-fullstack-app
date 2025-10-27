@@ -1,140 +1,187 @@
 import { Injectable, signal } from '@angular/core';
 import { Task } from '../model/task.model';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
+  // URL de base de l'API
+  private readonly apiUrl = 'http://localhost:8080/api/v1/tasks';
+
   // Signal pour stocker les tâches
   private _tasks = signal<Task[]>([]);
-
-  // Signal readonly exposé publiquement
   public readonly tasks = this._tasks.asReadonly();
 
-  constructor() {
-    this.initializeDemoData();
+  constructor(private http: HttpClient) {
+    console.log("1")
+    // Charger les tâches au démarrage
+    this.loadAllTasks();
+    console.log(this.loadAllTasks,this.tasks);
+    
   }
 
   /**
-   * Initialise des données de démonstration
+   * Charge toutes les tâches depuis l'API
    */
-  private initializeDemoData(): void {
-    const demoTasks: Task[] = [
-      {
-        id: 'task-1',
-        label: 'Préparer la réunion mensuelle',
-        description: 'Organiser l\'ordre du jour et préparer les documents nécessaires pour la réunion mensuelle avec l\'équipe.',
-        completed: false
-      },
-      {
-        id: 'task-2',
-        label: 'Réviser le code du module utilisateur',
-        description: 'Effectuer une revue de code approfondie du module de gestion des utilisateurs avant la mise en production.',
-        completed: true
-      },
-      {
-        id: 'task-3',
-        label: 'Mettre à jour la documentation',
-        description: 'Mettre à jour la documentation technique du projet suite aux dernières modifications de l\'API.',
-        completed: false
-      },
-      {
-        id: 'task-4',
-        label: 'Corriger les bugs critiques',
-        description: 'Résoudre les bugs critiques signalés dans le système de tickets avant la fin de la semaine.',
-        completed: false
-      },
-      {
-        id: 'task-5',
-        label: 'Former les nouveaux développeurs',
-        description: 'Organiser une session de formation pour les nouveaux membres de l\'équipe sur les bonnes pratiques du projet.',
-        completed: true
-      }
-    ];
-
-    this._tasks.set(demoTasks);
+  loadAllTasks(): void {
+    this.http.get<Task[]>(this.apiUrl)
+      .pipe(
+        tap(tasks => this._tasks.set(tasks)),
+        catchError(this.handleError)
+      )
+      .subscribe();
   }
 
   /**
    * Récupère toutes les tâches
+   * GET /api/v1/tasks
    */
-  getAllTasks(): Task[] {
-    return this._tasks();
+  getAllTasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(this.apiUrl)
+      .pipe(
+        tap(tasks => this._tasks.set(tasks)),
+        catchError(this.handleError)
+      );
   }
 
   /**
    * Récupère une tâche par son ID
+   * GET /api/v1/tasks/{id}
    */
-  getTaskById(id: string): Task | undefined {
-    return this._tasks().find(task => task.id === id);
+  getTaskById(id: string): Observable<Task> {
+    return this.http.get<Task>(`${this.apiUrl}/${id}`)
+      .pipe(catchError(this.handleError));
   }
 
   /**
-   * Ajoute une nouvelle tâche
+   * Crée une nouvelle tâche
+   * POST /api/v1/tasks
    */
-  addTask(task: Task): void {
-    this._tasks.update(tasks => [...tasks, task]);
+  createTask(task: Omit<Task, 'id'>): Observable<Task> {
+    return this.http.post<Task>(this.apiUrl, task)
+      .pipe(
+        tap(newTask => {
+          // Ajouter la nouvelle tâche au signal
+          this._tasks.update(tasks => [...tasks, newTask]);
+        }),
+        catchError(this.handleError)
+      );
   }
 
   /**
    * Met à jour une tâche existante
+   * PUT /api/v1/tasks/{id}
    */
-  updateTask(updatedTask: Task): void {
-    this._tasks.update(tasks =>
-      tasks.map(task => task.id === updatedTask.id ? updatedTask : task)
-    );
+  updateTask(id: string, task: Task): Observable<Task> {
+    return this.http.put<Task>(`${this.apiUrl}/${id}`, task)
+      .pipe(
+        tap(updatedTask => {
+          // Mettre à jour la tâche dans le signal
+          this._tasks.update(tasks =>
+            tasks.map(t => t.id === id ? updatedTask : t)
+          );
+        }),
+        catchError(this.handleError)
+      );
   }
 
   /**
    * Supprime une tâche
+   * DELETE /api/v1/tasks/{id}
    */
-  deleteTask(id: string): void {
-    this._tasks.update(tasks => tasks.filter(task => task.id !== id));
+  deleteTask(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`)
+      .pipe(
+        tap(() => {
+          // Supprimer la tâche du signal
+          this._tasks.update(tasks => tasks.filter(t => t.id !== id));
+        }),
+        catchError(this.handleError)
+      );
   }
 
   /**
-   * Bascule le statut d'une tâche
+   * Change le statut d'une tâche (completed/not completed)
+   * PATCH /api/v1/tasks/{id}/{completed}
    */
-  toggleTaskStatus(id: string): void {
-    this._tasks.update(tasks =>
-      tasks.map(task =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  toggleTaskCompletion(id: string, completed: boolean): Observable<Task> {
+    return this.http.patch<Task>(`${this.apiUrl}/${id}/${completed}`, {})
+      .pipe(
+        tap(updatedTask => {
+          // Mettre à jour la tâche dans le signal
+          this._tasks.update(tasks =>
+            tasks.map(t => t.id === id ? updatedTask : t)
+          );
+        }),
+        catchError(this.handleError)
+      );
   }
 
   /**
-   * Récupère les tâches actives
+   * Liste les tâches selon leur statut
+   * GET /api/v1/tasks/status?completed=true|false
    */
+  getTasksByStatus(completed: boolean): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.apiUrl}/status`, {
+      params: { completed: completed.toString() }
+    })
+    .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Méthodes utilitaires locales (sans appel API)
+   */
+  
   getActiveTasks(): Task[] {
     return this._tasks().filter(task => !task.completed);
   }
 
-  /**
-   * Récupère les tâches complétées
-   */
   getCompletedTasks(): Task[] {
     return this._tasks().filter(task => task.completed);
   }
 
-  /**
-   * Compte le nombre total de tâches
-   */
   getTotalCount(): number {
     return this._tasks().length;
   }
 
-  /**
-   * Compte le nombre de tâches actives
-   */
   getActiveCount(): number {
     return this.getActiveTasks().length;
   }
 
-  /**
-   * Compte le nombre de tâches complétées
-   */
   getCompletedCount(): number {
     return this.getCompletedTasks().length;
+  }
+
+  /**
+   * Gestion des erreurs HTTP
+   */
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Une erreur est survenue';
+
+    if (error.error instanceof ErrorEvent) {
+      // Erreur côté client
+      errorMessage = `Erreur: ${error.error.message}`;
+    } else {
+      // Erreur côté serveur
+      errorMessage = `Code: ${error.status}\nMessage: ${error.message}`;
+      
+      // Messages personnalisés selon le code d'erreur
+      switch (error.status) {
+        case 400:
+          errorMessage = 'Requête invalide. Vérifiez les données envoyées.';
+          break;
+        case 404:
+          errorMessage = 'Tâche introuvable.';
+          break;
+        case 500:
+          errorMessage = 'Erreur serveur. Veuillez réessayer plus tard.';
+          break;
+      }
+    }
+
+    console.error(errorMessage);
+    return throwError(() => new Error(errorMessage));
   }
 }

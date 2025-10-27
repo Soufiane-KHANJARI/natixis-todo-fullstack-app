@@ -44,7 +44,6 @@ export class TaskFormComponent implements OnInit {
     const task = this.data.task;
 
     this.taskForm = this.fb.group({
-      id: [task?.id || this.generateId()],
       label: [
         task?.label || '',
         [
@@ -68,7 +67,7 @@ export class TaskFormComponent implements OnInit {
     }
   }
 
-  private generateId(): string {
-    return `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  }
+  // private generateId(): string {
+  //   return `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  // }
 }

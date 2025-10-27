@@ -8,12 +8,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 // Services et Models
-
+import { TaskService } from '../../service/task.service';
+import { Task } from '../../model/task.model';
 
 // Components
 import { TaskFormComponent } from '../task-form/task-form.component';
-import { TaskService } from '../../service/task.service';
-import { Task } from '../../model/task.model';
 
 @Component({
   selector: 'app-task-detail',
@@ -35,6 +34,7 @@ export class TaskDetailComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   task = signal<Task | null>(null);
+  taskcomp !:Task ;
 
   ngOnInit(): void {
     const taskId = this.route.snapshot.paramMap.get('id');
@@ -42,20 +42,22 @@ export class TaskDetailComponent implements OnInit {
     if (taskId) {
       this.loadTask(taskId);
     } else {
-      this.showNotification('ID de tâche manquant');
+      this.showNotification('ID de tâche manquant', 'error');
       this.goBack();
     }
   }
 
   private loadTask(taskId: string): void {
-    const task = this.taskService.getTaskById(taskId);
-    
-    if (task) {
-      this.task.set(task);
-    } else {
-      this.showNotification('Tâche introuvable');
-      this.goBack();
-    }
+    // Charger la tâche depuis l'API
+    this.taskService.getTaskById(taskId).subscribe({
+      next: (task) => {
+        this.task.set(task);
+      },
+      error: (error) => {
+        this.showNotification(`Erreur: ${error.message}`, 'error');
+        this.goBack();
+      }
+    });
   }
 
   goBack(): void {
@@ -78,10 +80,18 @@ export class TaskDetailComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result: Task | undefined) => {
+      
       if (result) {
-        this.taskService.updateTask(result);
-        this.task.set(result);
-        this.showNotification('Tâche modifiée avec succès');
+        // Mettre à jour la tâche via l'API
+        this.taskService.updateTask(currentTask.id, result).subscribe({
+          next: (updatedTask) => {
+            this.task.set(updatedTask);
+            this.showNotification('Tâche modifiée avec succès');
+          },
+          error: (error) => {
+            this.showNotification(`Erreur: ${error.message}`, 'error');
+          }
+        });
       }
     });
   }
@@ -89,15 +99,20 @@ export class TaskDetailComponent implements OnInit {
   toggleTaskStatus(): void {
     const currentTask = this.task();
     if (!currentTask) return;
-
-    const updatedTask = { ...currentTask, completed: !currentTask.completed };
-    this.taskService.updateTask(updatedTask);
-    this.task.set(updatedTask);
-
-    const message = updatedTask.completed 
-      ? 'Tâche marquée comme terminée' 
-      : 'Tâche marquée comme en cours';
-    this.showNotification(message);
+    currentTask.completed=!currentTask.completed
+    // Appeler l'API pour changer le statut
+    this.taskService.updateTask(currentTask.id,currentTask).subscribe({
+      next: (updatedTask) => {
+        this.task.set(updatedTask);
+        const message = updatedTask.completed 
+          ? 'Tâche marquée comme terminée' 
+          : 'Tâche marquée comme en cours';
+        this.showNotification(message);
+      },
+      error: (error) => {
+        this.showNotification(`Erreur: ${error.message}`, 'error');
+      }
+    });
   }
 
   deleteTask(): void {
@@ -115,17 +130,25 @@ export class TaskDetailComponent implements OnInit {
     );
 
     snackBarRef.onAction().subscribe(() => {
-      this.taskService.deleteTask(currentTask.id);
-      this.showNotification('Tâche supprimée');
-      this.goBack();
+      // Supprimer la tâche via l'API
+      this.taskService.deleteTask(currentTask.id).subscribe({
+        next: () => {
+          this.showNotification('Tâche supprimée');
+          this.goBack();
+        },
+        error: (error) => {
+          this.showNotification(`Erreur: ${error.message}`, 'error');
+        }
+      });
     });
   }
 
-  private showNotification(message: string): void {
+  private showNotification(message: string, type: 'success' | 'error' = 'success'): void {
     this.snackBar.open(message, 'Fermer', {
       duration: 3000,
       horizontalPosition: 'center',
-      verticalPosition: 'bottom'
+      verticalPosition: 'bottom',
+      panelClass: type === 'error' ? ['snackbar-error'] : ['snackbar-success']
     });
   }
 }

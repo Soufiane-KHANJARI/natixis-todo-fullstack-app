@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -9,12 +9,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 // Services
-
+import { TaskService } from '../../service/task.service';
+import { Task } from '../../model/task.model';
 
 // Components
 import { TaskFormComponent } from '../task-form/task-form.component';
-import { TaskService } from '../../service/task.service';
-import { Task } from '../../model/task.model';
 
 @Component({
   selector: 'app-task-list',
@@ -29,12 +28,12 @@ import { Task } from '../../model/task.model';
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss'
 })
-export class TaskListComponent {
+export class TaskListComponent implements OnInit {
   private taskService = inject(TaskService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
-
+  taskcomp !:Task ;
   filterStatus = signal<'all' | 'active' | 'completed'>('all');
   
   tasks = this.taskService.tasks;
@@ -56,6 +55,13 @@ export class TaskListComponent {
     return tasks;
   });
 
+  ngOnInit(): void {
+    // Charger les tâches au démarrage
+    console.log("2")
+    this.taskService.loadAllTasks();
+
+  }
+
   openAddDialog(): void {
     const dialogRef = this.dialog.open(TaskFormComponent, {
       width: '600px',
@@ -66,8 +72,15 @@ export class TaskListComponent {
 
     dialogRef.afterClosed().subscribe((result: Task | undefined) => {
       if (result) {
-        this.taskService.addTask(result);
-        this.showNotification('Tâche créée avec succès !');
+        // Créer la tâche via l'API
+        this.taskService.createTask(result).subscribe({
+          next: () => {
+            this.showNotification('Tâche créée avec succès !');
+          },
+          error: (error) => {
+            this.showNotification(`Erreur: ${error.message}`, 'error');
+          }
+        });
       }
     });
   }
@@ -82,24 +95,34 @@ export class TaskListComponent {
     }
   }
 
-  toggleTaskStatus(taskId: string): void {
-    const task = this.taskService.getTaskById(taskId);
-    if (task) {
-      const updatedTask = { ...task, completed: !task.completed };
-      this.taskService.updateTask(updatedTask);
-      
-      const message = updatedTask.completed 
-        ? 'Tâche marquée comme terminée' 
-        : 'Tâche marquée comme en cours';
-      this.showNotification(message);
-    }
+   toggleTaskStatus(taskId: string) {
+    
+    this.taskService.getTaskById(taskId).subscribe(data => {
+    data.completed=!data.completed
+        this.taskService.updateTask(taskId, data).subscribe({
+      next: (updatedTask) => {
+        const message = updatedTask.completed 
+          ? 'Tâche marquée comme terminée' 
+          : 'Tâche marquée comme en cours';
+        this.showNotification(message);
+      },
+      error: (error) => {
+        this.showNotification(`Erreur: ${error.message}`, 'error');
+      }
+    });
+    }); 
+    console.log(this.taskcomp);
+    
+    // Appeler l'API pour changer le statut
+   
   }
 
-  private showNotification(message: string): void {
+  private showNotification(message: string, type: 'success' | 'error' = 'success'): void {
     this.snackBar.open(message, 'Fermer', {
       duration: 3000,
       horizontalPosition: 'center',
-      verticalPosition: 'bottom'
+      verticalPosition: 'bottom',
+      panelClass: type === 'error' ? ['snackbar-error'] : ['snackbar-success']
     });
   }
 }

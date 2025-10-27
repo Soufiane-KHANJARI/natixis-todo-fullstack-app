@@ -36,7 +36,7 @@ class TaskControllerTest {
     @Test
     void getAllTasks_shouldReturnListOfTasks() throws Exception {
         // Given
-        when(taskService.getAll(Pageable.ofSize(2))).thenReturn(List.of(dto1, dto2));
+        when(taskService.getAll()).thenReturn(List.of(dto1, dto2));
 
         // When / Then
         mockMvc.perform(get("/api/v1/tasks?size=2")
