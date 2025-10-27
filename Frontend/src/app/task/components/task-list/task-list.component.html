@@ -1,0 +1,111 @@
+<div class=" container task-list-container">
+  <!-- En-tête -->
+  <mat-toolbar color="primary" class="toolbar">
+    <mat-icon class="toolbar-icon">check_circle</mat-icon>
+    <span>Gestionnaire de Tâches</span>
+    <span class="spacer"></span>
+    <button mat-icon-button>
+      <mat-icon>more_vert</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <!-- Statistiques -->
+  <div class="stats-container">
+    <mat-card class="stat-card">
+      <div class="stat-content">
+        <mat-icon class="stat-icon all">list</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ tasks.length }}</div>
+          <div class="stat-label">Total</div>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-content">
+        <mat-icon class="stat-icon completed">check_circle</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ getCompletedCount() }}</div>
+          <div class="stat-label">Terminées</div>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-content">
+        <mat-icon class="stat-icon pending">schedule</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ getPendingCount() }}</div>
+          <div class="stat-label">En cours</div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filter-container">
+    <mat-button-toggle-group 
+      [value]="filterStatus" 
+      (change)="onFilterChange($event.value)"
+      class="filter-group">
+      <mat-button-toggle value="all">
+        <mat-icon>list</mat-icon>
+        Toutes
+      </mat-button-toggle>
+      <mat-button-toggle value="pending">
+        <mat-icon>schedule</mat-icon>
+        En cours
+      </mat-button-toggle>
+      <mat-button-toggle value="completed">
+        <mat-icon>check_circle</mat-icon>
+        Terminées
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Liste des tâches -->
+  <div class="tasks-container">
+    <mat-card 
+      *ngFor="let task of filteredTasks" 
+      class="task-card"
+      [class.completed]="task?.completed"
+      (click)="viewTaskDetail(task.id)">
+      
+      <div class="task-content">
+        <mat-checkbox 
+          [checked]="task.completed"
+          (click)="$event.stopPropagation()"
+          (change)="toggleTaskStatus(task)"
+          class="task-checkbox">
+        </mat-checkbox>
+
+        <div class="task-info">
+          <h3 class="task-label" [class.completed-text]="task.completed">
+            {{ task.label }}
+          </h3>
+          <p class="task-description">
+            {{ task.description }}
+          </p>
+        </div>
+
+        <button 
+          mat-icon-button 
+          class="task-action"
+          (click)="$event.stopPropagation(); viewTaskDetail(task.id)">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </mat-card>
+
+    <!-- Message si aucune tâche -->
+    <div *ngIf="filteredTasks.length === 0" class="no-tasks">
+      <mat-icon class="no-tasks-icon">inbox</mat-icon>
+      <p class="no-tasks-text">Aucune tâche à afficher</p>
+    </div>
+  </div>
+
+  <!-- Bouton d'ajout flottant -->
+  <button mat-fab color="accent" class="fab-button">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
