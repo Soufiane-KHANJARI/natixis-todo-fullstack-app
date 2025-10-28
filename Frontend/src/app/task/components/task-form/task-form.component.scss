@@ -30,6 +30,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -202,7 +203,7 @@
   }
 }
 
-/* Styles pour les erreurs de validation */
+
 .form-control.ng-invalid.ng-touched {
   border-color: #dc3545;
 
@@ -245,7 +246,7 @@
   }
 }
 
-/* Animation de sortie */
+
 :host ::ng-deep .mat-dialog-container {
   padding: 0 !important;
   border-radius: 12px;

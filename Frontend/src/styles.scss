@@ -1,12 +1,8 @@
-/* Styles globaux pour l'application de gestion de tâches */
-
-/* Styles pour les notifications */
-
 .snackbar-success {
   .mdc-snackbar__surface {
     background-color: #4caf50 !important;
   }
-  
+
   .mat-mdc-snack-bar-label,
   .mat-mdc-button {
     color: white !important;
@@ -17,7 +13,7 @@
   .mdc-snackbar__surface {
     background-color: #f44336 !important;
   }
-  
+
   .mat-mdc-snack-bar-label,
   .mat-mdc-button {
     color: white !important;
@@ -37,13 +33,11 @@
   }
 }
 
-/* Styles pour les dialogues */
 .mat-mdc-dialog-container {
   border-radius: 12px !important;
   overflow: hidden !important;
 }
 
-/* Scrollbar personnalisée */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -64,12 +58,12 @@
   background: #555;
 }
 
-/* Animation fade-in */
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -80,14 +74,13 @@
   animation: fadeIn 0.3s ease;
 }
 
-/* Transitions globales */
+
 * {
   transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
   transition-duration: 0.3s;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Reset de la transition pour les éléments qui n'en ont pas besoin */
 input,
 textarea,
 button,
@@ -95,7 +88,6 @@ select {
   transition-property: none;
 }
 
-/* Améliorations de l'accessibilité */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -108,14 +100,12 @@ select {
   border-width: 0;
 }
 
-/* Focus visible pour l'accessibilité */
 *:focus-visible {
   outline: 2px solid #3f51b5;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Amélioration de la lisibilité */
 body {
   font-family: 'Roboto', 'Helvetica Neue', sans-serif;
   line-height: 1.6;
@@ -123,12 +113,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Styles pour les cartes Material */
 mat-card {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Styles pour les boutons Material */
 button[mat-raised-button],
 button[mat-flat-button],
 button[mat-stroked-button] {
@@ -136,7 +124,7 @@ button[mat-stroked-button] {
   font-weight: 500;
 }
 
-/* Amélioration des champs de formulaire */
+
 .mat-mdc-form-field {
   width: 100%;
 }
@@ -145,17 +133,20 @@ button[mat-stroked-button] {
   background-color: rgba(63, 81, 181, 0.04);
 }
 
-/* Styles pour les chips */
+
 mat-chip {
   font-weight: 500;
   letter-spacing: 0.3px;
 }
 
-/* Animation de chargement */
+
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -165,32 +156,80 @@ mat-chip {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Utilitaires de spacing */
-.mt-1 { margin-top: 0.5rem !important; }
-.mt-2 { margin-top: 1rem !important; }
-.mt-3 { margin-top: 1.5rem !important; }
-.mt-4 { margin-top: 2rem !important; }
 
-.mb-1 { margin-bottom: 0.5rem !important; }
-.mb-2 { margin-bottom: 1rem !important; }
-.mb-3 { margin-bottom: 1.5rem !important; }
-.mb-4 { margin-bottom: 2rem !important; }
+.mt-1 {
+  margin-top: 0.5rem !important;
+}
 
-.p-1 { padding: 0.5rem !important; }
-.p-2 { padding: 1rem !important; }
-.p-3 { padding: 1.5rem !important; }
-.p-4 { padding: 2rem !important; }
+.mt-2 {
+  margin-top: 1rem !important;
+}
 
-/* Utilitaires de texte */
-.text-center { text-align: center !important; }
-.text-right { text-align: right !important; }
-.text-left { text-align: left !important; }
+.mt-3 {
+  margin-top: 1.5rem !important;
+}
 
-.font-bold { font-weight: 700 !important; }
-.font-medium { font-weight: 500 !important; }
-.font-normal { font-weight: 400 !important; }
+.mt-4 {
+  margin-top: 2rem !important;
+}
 
-/* Mode sombre (optionnel) */
+.mb-1 {
+  margin-bottom: 0.5rem !important;
+}
+
+.mb-2 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-3 {
+  margin-bottom: 1.5rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 2rem !important;
+}
+
+.p-1 {
+  padding: 0.5rem !important;
+}
+
+.p-2 {
+  padding: 1rem !important;
+}
+
+.p-3 {
+  padding: 1.5rem !important;
+}
+
+.p-4 {
+  padding: 2rem !important;
+}
+
+
+.text-center {
+  text-align: center !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.font-bold {
+  font-weight: 700 !important;
+}
+
+.font-medium {
+  font-weight: 500 !important;
+}
+
+.font-normal {
+  font-weight: 400 !important;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background-color: #1a1a1a;
@@ -200,8 +239,8 @@ mat-chip {
   }
 }
 
-/* Print styles */
 @media print {
+
   .no-print,
   mat-toolbar,
   button,

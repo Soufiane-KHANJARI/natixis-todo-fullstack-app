@@ -2,29 +2,21 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
-// Material Imports
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
-// Services et Models
 import { TaskService } from '../../service/task.service';
 import { Task } from '../../model/task.model';
 
-// Components
 import { TaskFormComponent } from '../task-form/task-form.component';
 
 @Component({
   selector: 'app-task-detail',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatDialogModule,
-    MatSnackBarModule
-  ],
+  imports: [CommonModule, MatIconModule, MatDialogModule, MatSnackBarModule],
   templateUrl: './task-detail.component.html',
-  styleUrl: './task-detail.component.scss'
+  styleUrl: './task-detail.component.scss',
 })
 export class TaskDetailComponent implements OnInit {
   private taskService = inject(TaskService);
@@ -34,11 +26,11 @@ export class TaskDetailComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   task = signal<Task | null>(null);
-  taskcomp !:Task ;
+  taskcomp!: Task;
 
   ngOnInit(): void {
     const taskId = this.route.snapshot.paramMap.get('id');
-    
+
     if (taskId) {
       this.loadTask(taskId);
     } else {
@@ -48,7 +40,6 @@ export class TaskDetailComponent implements OnInit {
   }
 
   private loadTask(taskId: string): void {
-    // Charger la tâche depuis l'API
     this.taskService.getTaskById(taskId).subscribe({
       next: (task) => {
         this.task.set(task);
@@ -56,7 +47,7 @@ export class TaskDetailComponent implements OnInit {
       error: (error) => {
         this.showNotification(`Erreur: ${error.message}`, 'error');
         this.goBack();
-      }
+      },
     });
   }
 
@@ -76,11 +67,10 @@ export class TaskDetailComponent implements OnInit {
       width: '600px',
       maxWidth: '95vw',
       panelClass: 'custom-dialog',
-      data: { mode: 'edit', task: currentTask }
+      data: { mode: 'edit', task: currentTask },
     });
 
     dialogRef.afterClosed().subscribe((result: Task | undefined) => {
-      
       if (result) {
         // Mettre à jour la tâche via l'API
         this.taskService.updateTask(currentTask.id, result).subscribe({
@@ -90,7 +80,7 @@ export class TaskDetailComponent implements OnInit {
           },
           error: (error) => {
             this.showNotification(`Erreur: ${error.message}`, 'error');
-          }
+          },
         });
       }
     });
@@ -99,19 +89,19 @@ export class TaskDetailComponent implements OnInit {
   toggleTaskStatus(): void {
     const currentTask = this.task();
     if (!currentTask) return;
-    currentTask.completed=!currentTask.completed
+    currentTask.completed = !currentTask.completed;
     // Appeler l'API pour changer le statut
-    this.taskService.updateTask(currentTask.id,currentTask).subscribe({
+    this.taskService.updateTask(currentTask.id, currentTask).subscribe({
       next: (updatedTask) => {
         this.task.set(updatedTask);
-        const message = updatedTask.completed 
-          ? 'Tâche marquée comme terminée' 
+        const message = updatedTask.completed
+          ? 'Tâche marquée comme terminée'
           : 'Tâche marquée comme en cours';
         this.showNotification(message);
       },
       error: (error) => {
         this.showNotification(`Erreur: ${error.message}`, 'error');
-      }
+      },
     });
   }
 
@@ -119,15 +109,11 @@ export class TaskDetailComponent implements OnInit {
     const currentTask = this.task();
     if (!currentTask) return;
 
-    const snackBarRef = this.snackBar.open(
-      `Supprimer "${currentTask.label}" ?`,
-      'Confirmer',
-      {
-        duration: 5000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom'
-      }
-    );
+    const snackBarRef = this.snackBar.open(`Supprimer "${currentTask.label}" ?`, 'Confirmer', {
+      duration: 5000,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+    });
 
     snackBarRef.onAction().subscribe(() => {
       // Supprimer la tâche via l'API
@@ -138,7 +124,7 @@ export class TaskDetailComponent implements OnInit {
         },
         error: (error) => {
           this.showNotification(`Erreur: ${error.message}`, 'error');
-        }
+        },
       });
     });
   }
@@ -148,7 +134,7 @@ export class TaskDetailComponent implements OnInit {
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
-      panelClass: type === 'error' ? ['snackbar-error'] : ['snackbar-success']
+      panelClass: type === 'error' ? ['snackbar-error'] : ['snackbar-success'],
     });
   }
 }

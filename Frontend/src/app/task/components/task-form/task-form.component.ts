@@ -2,13 +2,9 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-// Material Imports
 import { MatIconModule } from '@angular/material/icon';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Task } from '../../model/task.model';
-
-// Models
-
 
 interface DialogData {
   mode: 'create' | 'edit';
@@ -18,14 +14,9 @@ interface DialogData {
 @Component({
   selector: 'app-task-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatDialogModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule, MatDialogModule],
   templateUrl: './task-form.component.html',
-  styleUrl: './task-form.component.scss'
+  styleUrl: './task-form.component.scss',
 })
 export class TaskFormComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -46,17 +37,10 @@ export class TaskFormComponent implements OnInit {
     this.taskForm = this.fb.group({
       label: [
         task?.label || '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(100)
-        ]
+        [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
       ],
-      description: [
-        task?.description || '',
-        [Validators.maxLength(500)]
-      ],
-      completed: [task?.completed || false]
+      description: [task?.description || '', [Validators.maxLength(500)]],
+      completed: [task?.completed || false],
     });
   }
 
@@ -66,8 +50,4 @@ export class TaskFormComponent implements OnInit {
       this.dialogRef.close(taskData);
     }
   }
-
-  // private generateId(): string {
-  //   return `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  // }
 }

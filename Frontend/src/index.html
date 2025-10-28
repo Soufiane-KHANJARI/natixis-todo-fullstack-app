@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application de Gestion de Tâches - Démo Interactive</title>
+    <title>Task Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
@@ -23,7 +24,6 @@
             min-height: 100vh;
         }
 
-        /* Header */
         .app-header {
             padding: 2rem 2rem 1rem;
             text-align: center;
@@ -56,7 +56,7 @@
             font-size: 1rem;
         }
 
-        /* Navigation */
+
         .nav-tabs {
             display: flex;
             justify-content: center;
@@ -91,7 +91,7 @@
             color: white;
         }
 
-        /* Main Content */
+
         .main-content {
             padding: 0 2rem 2rem;
             max-width: 900px;
@@ -105,7 +105,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
         }
 
-        /* Page Header */
+
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -141,7 +141,7 @@
             box-shadow: 0 4px 12px rgba(91, 107, 199, 0.4);
         }
 
-        /* Filters */
+
         .filters {
             display: flex;
             gap: 0.75rem;
@@ -189,7 +189,7 @@
             border-radius: 3px 3px 0 0;
         }
 
-        /* Task List */
+
         .tasks-list {
             display: flex;
             flex-direction: column;
@@ -269,7 +269,7 @@
             color: #ccc;
         }
 
-        /* Detail Page */
+
         .detail-header {
             display: flex;
             justify-content: space-between;
@@ -408,7 +408,7 @@
             color: white;
         }
 
-        /* Modal */
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -442,6 +442,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -540,7 +541,7 @@
             display: none !important;
         }
 
-        /* Responsive */
+
         @media (max-width: 768px) {
             .app-header {
                 padding: 1.5rem 1rem 0.5rem;
@@ -585,6 +586,7 @@
         }
     </style>
 </head>
+
 <body>
-    <app-root></app-root>    
-</body>       
+    <app-root></app-root>
+</body>

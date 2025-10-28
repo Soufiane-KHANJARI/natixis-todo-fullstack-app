@@ -1,7 +1,6 @@
-<!-- Formulaire - Basé sur la maquette -->
 <div class="modal-overlay">
   <div class="modal-container">
-    <!-- Header du modal -->
+
     <div class="modal-header">
       <h2>{{ isEditMode() ? 'Modifier la tâche' : 'Nouvelle tâche' }}</h2>
       <button class="btn-close" mat-dialog-close>
@@ -9,37 +8,28 @@
       </button>
     </div>
 
-    <!-- Contenu du formulaire -->
+
     <div class="modal-body">
       <form [formGroup]="taskForm">
-        <!-- Champ Intitulé -->
+
         <div class="form-group">
           <label for="label">Intitulé de la tâche <span class="required">*</span></label>
-          <input 
-            type="text" 
-            id="label"
-            class="form-control"
-            formControlName="label"
-            placeholder="Ex: Implémenter la nouvelle fonctionnalité"
-            maxlength="100">
+          <input type="text" id="label" class="form-control" formControlName="label"
+            placeholder="Ex: Implémenter la nouvelle fonctionnalité" maxlength="100">
           @if (taskForm.get('label')?.hasError('required') && taskForm.get('label')?.touched) {
-            <span class="error-message">L'intitulé est obligatoire</span>
+          <span class="error-message">L'intitulé est obligatoire</span>
           }
           @if (taskForm.get('label')?.hasError('minlength')) {
-            <span class="error-message">L'intitulé doit contenir au moins 3 caractères</span>
+          <span class="error-message">L'intitulé doit contenir au moins 3 caractères</span>
           }
         </div>
 
-        <!-- Champ Description -->
+
         <div class="form-group">
           <label for="description">Description</label>
-          <textarea 
-            id="description"
-            class="form-control"
-            formControlName="description"
+          <textarea id="description" class="form-control" formControlName="description"
             placeholder="Développer et tester la nouvelle fonctionnalité de recherche avancée avec filtres multiples et sauvegarde des préférences utilisateur."
-            rows="6"
-            maxlength="500"></textarea>
+            rows="6" maxlength="500"></textarea>
           <div class="char-count">
             {{ taskForm.get('description')?.value?.length || 0 }} / 500 caractères
           </div>
@@ -47,15 +37,12 @@
       </form>
     </div>
 
-    <!-- Footer avec actions -->
+
     <div class="modal-footer">
       <button class="btn-secondary" mat-dialog-close>
         Annuler
       </button>
-      <button 
-        class="btn-primary" 
-        (click)="saveTask()"
-        [disabled]="!taskForm.valid">
+      <button class="btn-primary" (click)="saveTask()" [disabled]="!taskForm.valid">
         {{ isEditMode() ? 'Enregistrer' : 'Créer la tâche' }}
       </button>
     </div>

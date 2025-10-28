@@ -1,36 +1,17 @@
-<!-- Liste des Tâches - Basée sur la maquette -->
 <div class="app-container">
-  <!-- En-tête de l'application -->
+
   <header class="app-header">
     <div class="header-content">
       <div class="header-title">
-        <mat-icon class="app-icon">check_circle</mat-icon>
-        <h1>Application de Gestion de Tâches</h1>
+        <h1>NatixTask</h1>
       </div>
-      <p class="header-subtitle">Démo interactive des interfaces Angular</p>
+      <p class="header-subtitle">Transformer les tâches en succès !</p>
     </div>
   </header>
 
-  <!-- Navigation par onglets -->
-  <div class="nav-tabs">
-    <button class="nav-tab active">
-      <mat-icon>list_alt</mat-icon>
-      Liste des tâches
-    </button>
-    <button class="nav-tab" (click)="goToDetail()">
-      <mat-icon>search</mat-icon>
-      Détails d'une tâche
-    </button>
-    <button class="nav-tab" (click)="openAddDialog()">
-      <mat-icon>add</mat-icon>
-      Formulaire (Ajout/Modification)
-    </button>
-  </div>
-
-  <!-- Contenu principal -->
   <main class="main-content">
     <div class="content-card">
-      <!-- Header avec titre et bouton -->
+
       <div class="page-header">
         <h2>Mes Tâches</h2>
         <button class="btn-primary" (click)="openAddDialog()">
@@ -39,23 +20,15 @@
         </button>
       </div>
 
-      <!-- Filtres -->
+
       <div class="filters">
-        <button 
-          class="filter-btn" 
-          [class.active]="filterStatus() === 'all'"
-          (click)="filterStatus.set('all')">
+        <button class="filter-btn" [class.active]="filterStatus() === 'all'" (click)="filterStatus.set('all')">
           Toutes <span class="badge">{{ totalTasks() }}</span>
         </button>
-        <button 
-          class="filter-btn" 
-          [class.active]="filterStatus() === 'active'"
-          (click)="filterStatus.set('active')">
+        <button class="filter-btn" [class.active]="filterStatus() === 'active'" (click)="filterStatus.set('active')">
           En cours <span class="badge">{{ activeTasks() }}</span>
         </button>
-        <button 
-          class="filter-btn" 
-          [class.active]="filterStatus() === 'completed'"
+        <button class="filter-btn" [class.active]="filterStatus() === 'completed'"
           (click)="filterStatus.set('completed')">
           Terminées <span class="badge">{{ completedTasks() }}</span>
         </button>
@@ -64,27 +37,25 @@
       <!-- Liste des tâches -->
       <div class="tasks-list">
         @if (filteredTasks().length === 0) {
-          <div class="empty-state">
-            <p>Aucune tâche à afficher</p>
-          </div>
+        <div class="empty-state">
+          <p>Aucune tâche à afficher</p>
+        </div>
         } @else {
-          @for (task of filteredTasks(); track task.id) {
-            <div class="task-item" (click)="viewTaskDetail(task.id)">
-              <div class="task-checkbox" (click)="$event.stopPropagation()">
-                <mat-checkbox 
-                  [checked]="task.completed"
-                  (change)="toggleTaskStatus(task.id)">
-                </mat-checkbox>
-              </div>
-              <div class="task-content">
-                <h3 [class.completed]="task.completed">{{ task.label }}</h3>
-                <p>{{ task.description }}</p>
-              </div>
-              <div class="task-arrow">
-                <mat-icon>arrow_forward</mat-icon>
-              </div>
-            </div>
-          }
+        @for (task of filteredTasks(); track task.id) {
+        <div class="task-item" (click)="viewTaskDetail(task.id)">
+          <div class="task-checkbox" (click)="$event.stopPropagation()">
+            <mat-checkbox [checked]="task.completed" (change)="toggleTaskStatus(task.id)">
+            </mat-checkbox>
+          </div>
+          <div class="task-content">
+            <h3 [class.completed]="task.completed">{{ task.label }}</h3>
+            <p>{{ task.description }}</p>
+          </div>
+          <div class="task-arrow">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+        </div>
+        }
         }
       </div>
     </div>

@@ -1,107 +1,89 @@
-<!-- Détail d'une Tâche - Basée sur la maquette -->
 <div class="app-container">
-  <!-- En-tête de l'application -->
+
   <header class="app-header">
     <div class="header-content">
       <div class="header-title">
-        <mat-icon class="app-icon">check_circle</mat-icon>
-        <h1>Application de Gestion de Tâches</h1>
+        <h1>NatixTask</h1>
       </div>
-      <p class="header-subtitle">Démo interactive des interfaces Angular</p>
+      <p class="header-subtitle">Transformer les tâches en succès !</p>
     </div>
   </header>
 
-  <!-- Navigation par onglets -->
-  <div class="nav-tabs">
-    <button class="nav-tab" (click)="goToList()">
-      <mat-icon>list_alt</mat-icon>
-      Liste des tâches
-    </button>
-    <button class="nav-tab active">
-      <mat-icon>search</mat-icon>
-      Détails d'une tâche
-    </button>
-    <button class="nav-tab" (click)="openEditDialog()">
-      <mat-icon>add</mat-icon>
-      Formulaire (Ajout/Modification)
-    </button>
-  </div>
 
-  <!-- Contenu principal -->
   <main class="main-content">
     <div class="content-card">
       @if (task()) {
-        <!-- Header avec retour et modifier -->
-        <div class="detail-header">
-          <button class="btn-back" (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-            Retour
-          </button>
-          <button class="btn-edit" (click)="openEditDialog()">
-            <mat-icon>edit</mat-icon>
-            Modifier
-          </button>
+
+      <div class="detail-header">
+        <button class="btn-back" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+        <button class="btn-edit" (click)="openEditDialog()">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+      </div>
+
+
+      <div class="detail-content">
+
+        <div class="status-badge" [class.completed]="task()?.completed">
+          <mat-icon>{{ task()?.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+          {{ task()?.completed ? 'Terminée' : 'En cours' }}
         </div>
 
-        <!-- Contenu du détail -->
-        <div class="detail-content">
-          <!-- Badge de statut -->
-          <div class="status-badge" [class.completed]="task()?.completed">
-            <mat-icon>{{ task()?.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-            {{ task()?.completed ? 'Terminée' : 'En cours' }}
-          </div>
 
-          <!-- Titre de la tâche -->
-          <h2 class="task-title">{{ task()?.label }}</h2>
+        <h2 class="task-title">{{ task()?.label }}</h2>
 
-          <!-- Section Description -->
-          <div class="detail-section">
-            <h3>DESCRIPTION</h3>
-            <div class="description-box">
-              <p>{{ task()?.description }}</p>
-            </div>
-          </div>
 
-          <!-- Section Informations -->
-          <div class="detail-section">
-            <h3>INFORMATIONS</h3>
-            <table class="info-table">
-              <tbody>
-                <tr>
-                  <td class="info-label">ID DE LA TÂCHE</td>
-                  <td class="info-label">STATUT</td>
-                </tr>
-                <tr>
-                  <td class="info-value">{{ task()?.id }}</td>
-                  <td class="info-value">{{ task()?.completed ? 'Terminée' : 'En cours' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Actions -->
-          <div class="detail-actions">
-            @if (!task()?.completed) {
-              <button class="btn-complete" (click)="toggleTaskStatus()">
-                <mat-icon>check</mat-icon>
-                Marquer comme terminée
-              </button>
-            } @else {
-              <button class="btn-complete" (click)="toggleTaskStatus()">
-                <mat-icon>radio_button_unchecked</mat-icon>
-                Marquer comme en cours
-              </button>
-            }
-            <button class="btn-delete" (click)="deleteTask()">
-              <mat-icon>delete</mat-icon>
-              Supprimer la tâche
-            </button>
+        <div class="detail-section">
+          <h3>DESCRIPTION</h3>
+          <div class="description-box">
+            <p>{{ task()?.description }}</p>
           </div>
         </div>
+
+
+        <div class="detail-section">
+          <h3>INFORMATIONS</h3>
+          <table class="info-table">
+            <tbody>
+              <tr>
+                <td class="info-label">ID DE LA TÂCHE</td>
+                <td class="info-label">STATUT</td>
+              </tr>
+              <tr>
+                <td class="info-value">{{ task()?.id }}</td>
+                <td class="info-value">{{ task()?.completed ? 'Terminée' : 'En cours' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
+        <div class="detail-actions">
+          @if (!task()?.completed) {
+          <button class="btn-complete" (click)="toggleTaskStatus()">
+            <mat-icon>check</mat-icon>
+            Marquer comme terminée
+          </button>
+          } @else {
+          <button class="btn-complete" (click)="toggleTaskStatus()">
+            <mat-icon>radio_button_unchecked</mat-icon>
+            Marquer comme en cours
+          </button>
+          }
+          <button class="btn-delete" (click)="deleteTask()">
+            <mat-icon>delete</mat-icon>
+            Supprimer la tâche
+          </button>
+        </div>
+      </div>
       } @else {
-        <div class="loading">
-          <p>Chargement...</p>
-        </div>
+      <div class="loading">
+        <p>Chargement...</p>
+      </div>
       }
     </div>
   </main>
