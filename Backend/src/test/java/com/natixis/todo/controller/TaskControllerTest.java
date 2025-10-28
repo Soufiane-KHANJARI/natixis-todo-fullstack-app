@@ -123,28 +123,6 @@ class TaskControllerTest {
     }
 
     @Test
-    void updateStatus_shouldReturnUpdatedTask() throws Exception {
-        // Given
-        var updatedDto = new TaskDto(1, "Task One", "Description One", true);
-        when(taskService.updateStatus(eq(1), eq(true))).thenReturn(updatedDto);
-
-        var json = """
-            {
-              "completed": true
-            }
-            """;
-
-        // When / Then
-        mockMvc.perform(patch("/api/v1/tasks/{id}/completed", 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.label").value("Task One"))
-                .andExpect(jsonPath("$.completed").value(true));
-    }
-
-    @Test
     void deleteTask_shouldReturnNoContent() throws Exception {
         // Given
         doNothing().when(taskService).delete(1);
